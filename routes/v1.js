@@ -22,10 +22,13 @@ router.get('/TriggerMessage', async (req, res) => {
   const config = await req.app.locals.redis.hGetAll(chargePoint)
 
   // (2) Send request to specific URI from (1)
-  const response = await Promise.resolve(Math.floor(Math.random() * 100 + 1))
+  const ocpp_result = await axios.post("http://" + config.internal_path + config.api + 'TriggerMessage', {
+    chargerId: chargePoint,
+    payload: payload
+  })
 
   // (3) Waiting response and return to callee
-  res.status(200).json({ URI, response, results: results.data, config })
+  res.status(200).json({ URI, ocpp_result: JSON.stringify(ocpp_result), config })
 })
 
 module.exports = router
