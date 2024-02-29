@@ -1,25 +1,52 @@
+// Dotenv initial
 const dotenv = require("dotenv")
 dotenv.config()
 
+// Express initial
 const express = require("express")
 const bodyParser = require("body-parser")
 const app = express()
 
-// Mongo global config
-const { createMongoDBConnection } = require('./libs/mongodb');
-app.set('mongo_db', createMongoDBConnection())
+// Redis initial
+const { createClient } = require('redis')
 
+// Mongo global config
+const { createMongoDBConnection } = require('./libs/mongodb')
+
+// Express global config
 app.use(bodyParser.json())
 bodyParser.urlencoded({ extended: true })
 
-app.use((req, _, next) => {
+if (!app.locals.mongo) {
+  console.log(`Initialize MongoDB`);
+  app.locals.mongo = createMongoDBConnection()
+}
+
+async function initialRedisConnection () {
+  if (!app.locals.redis) {
+    console.log(`Initialize Redis client`)
+    app.locals.redis = await createClient({
+      url: process.env.REDIS_URI
+    })
+    .on('error', err => console.log('Redis Client Error', err))
+    .connect()
+  }
+}
+
+initialRedisConnection()
+
+// Middleware
+app.use((req, res, next) => {
   console.log(`Access ${req.path}`)
   next()
 })
 
-app.get('/', (_, res) => {
-  res.status(200).json({})
-})
+// Route group
+app.use('/api/v0', require('./routes/v0'))
+app.use('/api/v1', require('./routes/v1'))
+
+// Route at root
+app.get('/', (req, res) => res.status(200).json({ path: req.path }))
 
 app.get('/health', (_, res) => {
   res.status(200).json({
