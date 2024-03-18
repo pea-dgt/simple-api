@@ -22,18 +22,18 @@ if (!app.locals.mongo) {
   app.locals.mongo = createMongoDBConnection()
 }
 
-async function initialRedisConnection () {
-  if (!app.locals.redis) {
-    console.log(`Initialize Redis client`)
-    app.locals.redis = await createClient({
-      url: process.env.REDIS_URI
-    })
-    .on('error', err => console.log('Redis Client Error', err))
-    .connect()
-  }
-}
+// async function initialRedisConnection () {
+//   if (!app.locals.redis) {
+//     console.log(`Initialize Redis client`, process.env.REDIS_URI)
+//     app.locals.redis = await createClient({
+//       url: process.env.REDIS_URI
+//     })
+//     .on('error', err => console.log('Redis Client Error', err))
+//     .connect()
+//   }
+// }
 
-initialRedisConnection()
+// initialRedisConnection()
 
 // Middleware
 app.use((req, res, next) => {
