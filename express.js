@@ -37,7 +37,7 @@ if (!app.locals.mongo) {
 
 // Middleware
 app.use((req, res, next) => {
-  console.log(`Access ${req.path}`)
+  console.log(`[${new Date().toISOString()}] Access ${req.path}`)
   next()
 })
 
