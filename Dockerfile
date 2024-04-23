@@ -7,6 +7,9 @@ WORKDIR /home/node
 COPY . .
 RUN npm install
 
+RUN useradd nobody
+USER nobody
+
 RUN chmod +x /home/node/run.sh
 
 EXPOSE 3000
