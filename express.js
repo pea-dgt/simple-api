@@ -74,13 +74,4 @@ app.get('/mongo', async (req, res) => {
   }
 })
 
-app.get('/info', (req, res) => {
-  const { query } = req
-  res.status(200).json({
-    app: 'simple-api',
-    current_time: new Date(),
-    query
-  })
-})
-
 module.exports = app
