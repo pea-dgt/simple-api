@@ -12,4 +12,4 @@ dotenv.config()
 
 // run()
 
-app.listen(3000, () => console.log(`Express started`))
+app.listen(process.env.OCPP_SERVER_PORT, () => console.log(`Express started`))

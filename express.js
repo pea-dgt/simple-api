@@ -54,4 +54,33 @@ app.get('/health', (_, res) => {
   })
 })
 
+app.get('/mongo', async (req, res) => {
+
+  try {
+    // Connect the client to the server	(optional starting in v4.7)
+    const { mongo: client }  = req.app.locals
+    console.log('Connecting to Mongo server...');
+    await client.connect();
+
+    // Send a ping to confirm a successful connection
+    await client.db("volta-poc").command({ ping: 1 });
+    console.log("Pinged your deployment. You successfully connected to MongoDB!");
+    res.status(200).json({})
+  } catch (error) {
+    console.error(error)
+    await client.close();
+    res.status(500).json({})
+    // Ensures that the client will close when you finish/error
+  }
+})
+
+app.get('/info', (req, res) => {
+  const { query } = req
+  res.status(200).json({
+    app: 'simple-api',
+    current_time: new Date(),
+    query
+  })
+})
+
 module.exports = app
