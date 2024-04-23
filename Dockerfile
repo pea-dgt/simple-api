@@ -10,6 +10,7 @@ RUN npm install
 RUN useradd nobody
 USER nobody
 
+RUN chown -R /home/node
 RUN chmod +x /home/node/run.sh
 
 EXPOSE 3000
