@@ -22,18 +22,25 @@ if (!app.locals.mongo) {
   app.locals.mongo = createMongoDBConnection();
 }
 
-// async function initialRedisConnection () {
-//   if (!app.locals.redis) {
-//     console.log(`Initialize Redis client`, process.env.REDIS_URI)
-//     app.locals.redis = await createClient({
-//       url: process.env.REDIS_URI
-//     })
-//     .on('error', err => console.log('Redis Client Error', err))
-//     .connect()
-//   }
-// }
+async function initialRedisConnection () {
+  if (!app.locals.redis) {
+    console.log(`Initializing Redis client`, process.env.REDIS_URI);
+    try {
+      const r = createClient({
+        url: process.env.REDIS_URI,
+        username: process.env.REDIS_USERNAME,
+        password: process.env.REDIS_PASSWORD,
+      });
+      r.on('error', err => console.log('Redis Client Error', err));
+      await r.connect();
+      app.locals.redis = r;
+    } catch (error) {
+      console.log(`Redis error cause`, error);      
+    }
+  }
+}
 
-// initialRedisConnection()
+initialRedisConnection()
 
 // Middleware
 app.use((req, res, next) => {
@@ -90,6 +97,22 @@ app.get('/chargers', async (req, res) => {
     res.status(500).json({ error });
   } finally {
     await client.close();
+  }
+});
+
+app.get('/redis', async (req, res) => {
+  const { redis } = req.app.locals;
+  const { key } = req.query;
+  try {
+    const v = await redis.get(key);
+    res.status(200).json({
+      redis,
+      [key]: v
+    });
+  } catch (error) {
+    res.status(500).json({
+      error
+    });     
   }
 });
 
