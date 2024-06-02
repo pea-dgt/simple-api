@@ -14,7 +14,7 @@ const { createClient } = require('redis');
 const { createMongoDBConnection } = require('./libs/mongodb');
 
 // RabbitMQ
-const rbConn = require('./libs/rabbitmq');
+const mqChannel = require("./libs/rabbitmq");
 
 // Express global config
 app.use(bodyParser.json());
@@ -25,8 +25,8 @@ if (!app.locals.mongo) {
   app.locals.mongo = createMongoDBConnection();
 }
 
-if (!app.locals.rb) {
-  app.locals.rb = rbConn;
+if (!app.locals.mqChannel) {
+  app.locals.mqChannel = mqChannel;
 }
 
 async function initialRedisConnection () {
