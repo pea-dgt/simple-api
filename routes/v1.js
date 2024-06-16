@@ -36,21 +36,4 @@ router.get('/TriggerMessage', async (req, res) => {
   }
 })
 
-router.get('/TriggerMessageMQ', async (req, res) => {
-  const { chargerId, payload } = req.body;
-  try {
-    const channel = await req.app.locals.mqChannel;
-    const data = {
-      chargerId, 
-      method: "TriggerMessage", 
-      payload
-    };
-    const isSent = channel.sendToQueue('my_queue', Buffer.from(JSON.stringify(data)))
-    res.status(200).json({ success: true, isSent });
-  } catch (error) {
-    console.error(error)
-    res.status(500).json({ error })
-  }
-})
-
 module.exports = router
